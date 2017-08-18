@@ -1,3 +1,0 @@
-# Run Listeners
-org.springframework.boot.SpringApplicationRunListener=\
-com.ctrip.xpipe.redis.console.H2Init
