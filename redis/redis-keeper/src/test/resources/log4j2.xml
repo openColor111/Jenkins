@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="info" shutdownHook="disable" monitorInterval="5"   packages="com.ctrip.xpipe.utils.log">
+
+
+    <Scripts>
+        <Script name="filter.gv" language="js">
+            java.lang.System.getProperty('log.console.close') == 'true'
+        </Script>
+    </Scripts>
+
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%X{xpipe.cluster.shard}[%d{HH:mm:ss:SSS}][%p][%t][%c{1}]%m%xpEx{filters(org.junit,org.eclipse.jdt.internal,org.apache.maven.surefire,org.mockito,org.apache.catalina,org.springframework.web,com.dianping.cat)}%n"/>
+            <ScriptFilter onMatch="DENY" onMisMatch="ACCEPT">
+                <ScriptRef ref="filter.gv" />
+            </ScriptFilter>
+        </console>
+
+        <RollingFile name="RollingFileInfo" fileName="target/applogs/xpipe/xpipe-test-${sys:server.port:-start}.log"
+                     filePattern="target/applogs/xpipe/xpipe-test-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%X{xpipe.cluster.shard}[%d{HH:mm:ss:SSS}][%p][%t][%c{1}]%m%xpEx{filters(org.junit,org.eclipse.jdt.internal,org.apache.maven.surefire,org.mockito,org.apache.catalina,org.springframework.web,com.dianping.cat)}%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+        </RollingFile>
+
+    </appenders>
+
+    <loggers>
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="io.netty" level="INFO"/>
+        <logger name="org.apache" level="WARN"/>
+
+		<logger name="com.ctrip.xpipe.lifecycle.DefaultLifecycleState" level="WARN"/>
+		<logger name="com.ctrip.xpipe.redis.keeper.monitor.CommandDelay" level="WARN"/>
+		<logger name="com.ctrip.xpipe.lifecycle.DefaultRegistry" level="WARN"/>
+		
+		<!--  
+		<logger name="io.netty.handler.logging.LoggingHandler" level="DEBUG"/>
+		-->
+		
+        <root level="INFO">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+        </root>
+    </loggers>
+
+</configuration>
